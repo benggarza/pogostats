@@ -1,8 +1,10 @@
+DROP DATABASE IF EXISTS pogo;
+
 CREATE DATABASE pogo;
 
 CREATE TABLE pokemon_type (
     id VARCHAR(10) NOT NULL PRIMARY KEY UNIQUE,
-)
+);
 
 CREATE TABLE pokemon (
     id VARCHAR(50) PRIMARY KEY NOT NULL UNIQUE,
@@ -50,7 +52,8 @@ CREATE TABLE pokemon_level (
     id INT PRIMARY KEY NOT NULL UNIQUE,
     cpm FLOAT NOT NULL,
     stardust_cost_total INT NOT NULL,
-    candy_cost_total INT NOT NULL
+    candy_cost_total INT NOT NULL,
+    xl_candy_cost_total INT NOT NULL
 );
 
 CREATE TABLE type_effectiveness (
