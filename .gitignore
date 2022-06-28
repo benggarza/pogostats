@@ -1,1 +1,7 @@
 .DS_Store
+pogostats/__pycache__
+pogostats.egg-info
+venv/
+pogostats/*.pyc
+dist/
+build/
