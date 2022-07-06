@@ -28,7 +28,7 @@ CREATE TABLE pokemon_evolution (
 );
 
 CREATE TABLE fast_move (
-    id VARCHAR(50) PRIMARY KEY NOT NULL UNIQUE,
+    id VARCHAR(50) PRIMARY KEY NOT NULL,
     move_type_id VARCHAR(10) NOT NULL,
     pow INTEGER NOT NULL,
     duration_ms INTEGER NOT NULL,
@@ -38,7 +38,7 @@ CREATE TABLE fast_move (
 );
 
 CREATE TABLE charged_move (
-    id VARCHAR(50) PRIMARY KEY NOT NULL UNIQUE,
+    id VARCHAR(50) PRIMARY KEY NOT NULL,
     move_type_id VARCHAR(10) NOT NULL,
     pow INTEGER NOT NULL,
     duration_ms INTEGER NOT NULL,
@@ -64,7 +64,7 @@ CREATE TABLE pokemon_charged_move (
 );
 
 CREATE TABLE pokemon_level (
-    id FLOAT PRIMARY KEY NOT NULL UNIQUE,
+    id FLOAT PRIMARY KEY NOT NULL,
     cpm FLOAT NOT NULL,
     stardust_cost_total INTEGER NOT NULL,
     candy_cost_total INTEGER NOT NULL,
@@ -82,7 +82,7 @@ CREATE TABLE type_effectiveness (
 );
 
 CREATE TABLE my_pokemon (
-    id PRIMARY KEY NOT NULL UNIQUE,
+    id PRIMARY KEY NOT NULL,
     pokemon_id VARCHAR(50),
     atk_iv INTEGER,
     def_iv INTEGER,

@@ -105,8 +105,6 @@ pokemon_cross = pokemon_fmt.merge(pokemon_fmt, how='cross')
 pokemon_duplicates = pokemon_cross[pokemon_cross['id_x'] == pokemon_cross['id_y'] + "_NORMAL"]['id_y']
 pokemon_fmt = pokemon_fmt[~pokemon_fmt['id'].isin(pokemon_duplicates)]
 
-print(pokemon_fmt[pokemon_fmt['name'].str.contains("RAICHU")])
-
 # The Nidoran problem
 pokemon_fmt = pokemon_fmt[pokemon_fmt['id'] != 'NIDORAN_NORMAL']
 
@@ -125,14 +123,15 @@ evo_lists = pokemon_data[pokemon_data['evolutionBranch'].notna()][['pokemonId', 
 # Expand evolution branch lists into columns
 evo_df = evo_lists[['pokemonId', 'form']].join(evo_lists['evolutionBranch'].apply(pd.Series))
 
+
 # Un-pivot dataframe so each item in evolution branch is in its own row
 # remove excess rows
 evolution_dict = evo_df.melt(id_vars=['pokemonId','form'], value_name='evolution').dropna(subset=['evolution'])
 
 evolution_data = evolution_dict[['pokemonId', 'form']].join(evolution_dict['evolution'].apply(pd.Series), rsuffix='_evo')
 evolution_data.dropna(subset=['evolution'], inplace=True)
-print(evolution_data[evolution_data['pokemonId'].str.contains("RATTATA")][['pokemonId','evolution','form','form_evo']])
-print(evolution_data[evolution_data['pokemonId'].str.contains("PIKACHU")][['pokemonId','evolution','form','form_evo']])
+#print(evolution_data[evolution_data['pokemonId'].str.contains("RATTATA")][['pokemonId','evolution','form','form_evo']])
+
 
 # Filter out mega evolutions and excess rows with NaNs
 evolution_fmt = pd.DataFrame()
@@ -140,38 +139,82 @@ evolution_fmt['pokemon_id'] = evolution_data['form'].fillna(evolution_data['poke
 evolution_fmt['evolution_id'] = evolution_data['form_evo'].fillna(evolution_data['evolution'])
 evolution_fmt['evolution_cost'] = evolution_data['candyCost']
 
-print(evolution_fmt[evolution_fmt['evolution_id'].str.contains("RAICHU")])
-# Current issue: Pikachu's evolution is listed as {evolution: RAICHU, form: NaN}
-# when it should be [{evolution: RAICHU, form: RAICHU_NORMAL}, {evolution: RAICHU, form: RAICHU_ALOLA}]
 
 evolution_cross = evolution_fmt.merge(evolution_fmt, how='cross')
 evolution_duplicates = evolution_cross[evolution_cross['pokemon_id_x'] == evolution_cross['pokemon_id_y'] + "_NORMAL"]['pokemon_id_y']
 evolution_fmt = evolution_fmt[~evolution_fmt['pokemon_id'].isin(evolution_duplicates)]
 
-# The Nidoran problem
+# The Nidoran problem - Both Nidoran-F and Nidoran-M's forms are "NIDORAN_NORMAL",
+#                       causing unique constraint to fail
 evolution_fmt = evolution_fmt[evolution_fmt['pokemon_id'] != "NIDORAN_NORMAL"]
+
+# Bad evolution ids: some pokemon instead of listing the specific form to evolve to gives the name
+# we want to replace this with the basic form *_NORMAL
+valid_id = pokemon_fmt['id']#.drop_duplicates()
+bad_evo_id_locs = ~evolution_fmt['evolution_id'].isin(valid_id)
+evolution_fmt.loc[bad_evo_id_locs, 'evolution_id'] += "_NORMAL"
+
 
 
 print('pokemon evolution sample: ', list(evolution_fmt.itertuples(name=None, index=False))[0])
 print()
 
 evolution_sql = "INSERT INTO pokemon_evolution (pokemon_id, evolution_id, evolution_cost) VALUES (?, ?, ?)"
-#cursor.executemany(evolution_sql, list(evolution_fmt.itertuples(name=None, index=False)))
-for e in list(evolution_fmt.itertuples(name=None, index=False)):
-    print('adding ', e)
-    cursor.execute(evolution_sql, e)
+cursor.executemany(evolution_sql, list(evolution_fmt.itertuples(name=None, index=False)))
 cxn.commit()
 
 
-pokemon_charged_move_sql = "INSERT INTO pokemon_charged_move (pokemon_id, charged_move_id) VALUES (?, ?)"
 pokemon_fast_move_sql = "INSERT INTO pokemon_fast_move (pokemon_id, fast_move_id) VALUES (?, ?)"
-#pokemon_fast_move_vars = [(name, fast_move) for fast_move in fast_moves]
-#cursor.executemany(pokemon_fast_move_sql, pokemon_fast_move_vars)
-
-#pokemon_charged_move_vars = [(name, charged_move) for charged_move in charged_moves]
-#cursor.executemany(pokemon_charged_move_sql, pokemon_charged_move_vars)
 
 
+_pokemon_fast_data = pokemon_data[['pokemonId', 'form']].join(pokemon_data['quickMoves'].apply(pd.Series))
+pokemon_fast_data = _pokemon_fast_data.melt(id_vars=['pokemonId', 'form'], value_name='fastMove').dropna(subset=['fastMove'])
+pokemon_fast_fmt = pd.DataFrame()
+pokemon_fast_fmt['pokemon_id'] = pokemon_fast_data['form'].fillna(pokemon_fast_data['pokemonId'])
+pokemon_fast_fmt['fast_move_id'] = pokemon_fast_data['fastMove'].str.extract(r'^(\w+)_FAST$')
+
+# Remove pokemon ids from the duplicates df
+pokemon_fast_fmt = pokemon_fast_fmt[~pokemon_fast_fmt['pokemon_id'].isin(pokemon_duplicates)]
+
+# Nidoran problem
+pokemon_fast_fmt = pokemon_fast_fmt[pokemon_fast_fmt['pokemon_id'] != "NIDORAN_NORMAL"]
+
+# Remove fast moves that aren't in the gamemaster yet
+pokemon_fast_fmt = pokemon_fast_fmt[pokemon_fast_fmt['fast_move_id'].isin(fast_fmt['id'])]
+
+print('pokemon<>fast move sample:', list(pokemon_fast_fmt.itertuples(name=None, index=False))[0])
+print()
+
+cursor.executemany(pokemon_fast_move_sql, list(pokemon_fast_fmt.itertuples(name=None, index=False)))
 cxn.commit()
+
+#print(pokemon_data[['pokemonId', 'form', 'cinematicMoves']])
+pokemon_charged_move_sql = "INSERT INTO pokemon_charged_move (pokemon_id, charged_move_id) VALUES (?, ?)"
+
+_pokemon_charged_data = pokemon_data[['pokemonId', 'form']].join(pokemon_data['cinematicMoves'].apply(pd.Series))
+pokemon_charged_data = _pokemon_charged_data.melt(id_vars=['pokemonId', 'form'], value_name='chargedMove').dropna(subset=['chargedMove'])
+pokemon_charged_fmt = pd.DataFrame()
+pokemon_charged_fmt['pokemon_id'] = pokemon_charged_data['form'].fillna(pokemon_charged_data['pokemonId'])
+pokemon_charged_fmt['charged_move_id'] = pokemon_charged_data['chargedMove'].str.extract(r'^(\w+)$')
+
+# Remove pokemon ids from the duplicates df
+pokemon_charged_fmt = pokemon_charged_fmt[~pokemon_charged_fmt['pokemon_id'].isin(pokemon_duplicates)]
+
+# Nidoran problem
+pokemon_charged_fmt = pokemon_charged_fmt[pokemon_charged_fmt['pokemon_id'] != "NIDORAN_NORMAL"]
+
+# Remove charged moves that aren't in the gamemaster yet
+pokemon_charged_fmt = pokemon_charged_fmt[pokemon_charged_fmt['charged_move_id'].isin(charged_fmt['id'])]
+
+# Remove duplicates
+# July 6 - duplicates (Trubbish, Gunk Shot), (Galarian Weezing, Hyper Beam), (Chimecho, Psyshock)
+pokemon_charged_fmt.drop_duplicates(inplace=True)
+
+print('pokemon<>charged move sample:', list(pokemon_charged_fmt.itertuples(name=None, index=False))[0])
+print()
+
+cursor.executemany(pokemon_charged_move_sql, list(pokemon_charged_fmt.itertuples(name=None, index=False)))
+cxn.commit()
+
 
 cxn.close()
