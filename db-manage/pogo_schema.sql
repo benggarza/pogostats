@@ -3,7 +3,9 @@ CREATE TABLE pokemon_type (
 );
 
 CREATE TABLE pokemon (
-    id VARCHAR(50) PRIMARY KEY NOT NULL UNIQUE,
+    id VARCHAR(50) PRIMARY KEY NOT NULL,
+    name VARCHAR(50) NOT NULL,
+    pokedex_number INTEGER NOT NULL,
     first_type_id VARCHAR(10) NOT NULL,
     second_type_id VARCHAR(10),
     base_atk INTEGER NOT NULL,
@@ -11,7 +13,9 @@ CREATE TABLE pokemon (
     base_sta INTEGER NOT NULL,
     legendary BOOLEAN NOT NULL,
     FOREIGN KEY (first_type_id) REFERENCES pokemon_type(id),
-    FOREIGN KEY (second_type_id) REFERENCES pokemon_type(id)
+    FOREIGN KEY (second_type_id) REFERENCES pokemon_type(id),
+    CONSTRAINT unique_pokemon UNIQUE(id,name,first_type_id,second_type_id,base_atk,base_def,base_sta),
+    CONSTRAINT chk_pokedex CHECK(pokedex_number >0)
 );
 
 CREATE TABLE pokemon_evolution (
@@ -54,7 +58,7 @@ CREATE TABLE pokemon_fast_move (
 CREATE TABLE pokemon_charged_move (
     pokemon_id VARCHAR(50) NOT NULL,
     charged_move_id VARCHAR(50) NOT NULL,
-    CONSTRAINT uq_pokemon_charged_move UNIQUE(pokemon_id, charged_move_id),
+    CONSTRAINT uq_pokemon_charged_move UNIQUE(pokemon_id,charged_move_id),
     FOREIGN KEY (pokemon_id) REFERENCES pokemon(id),
     FOREIGN KEY (charged_move_id) REFERENCES charged_move(id)
 );
@@ -71,7 +75,7 @@ CREATE TABLE type_effectiveness (
     attack_type_id VARCHAR(10) NOT NULL,
     defender_type_id VARCHAR(10) NOT NULL,
     multiplier FLOAT NOT NULL,
-    CONSTRAINT uq_attack_defender_types UNIQUE(attack_type_id, defender_type_id),
+    CONSTRAINT uq_attack_defender_types UNIQUE(attack_type_id,defender_type_id),
     CONSTRAINT chk_valid_multiplier CHECK (multiplier IN (0.390625, 0.625, 1.0, 1.6)),
     FOREIGN KEY (attack_type_id) REFERENCES pokemon_type(id),
     FOREIGN KEY (defender_type_id) REFERENCES pokemon_type(id)
