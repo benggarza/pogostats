@@ -19,3 +19,34 @@ class Pokemon(Base):
 
     def __repr__(self):
         return "%d - %s" % (self.pokedex_number, self.id)
+
+class PokemonEvolution(Base):
+    __tablename__ = 'pokemon_evolution'
+
+    pokemon_id = Column(String, ForeignKey('pokemon.id'), primary_key=True)
+    evolution_id = Column(String, ForeignKey('pokemon.id'), primary_key=True)
+    evolution_cost = Column(Integer, nullable=False)
+
+    CheckConstraint('evolution_cost > 0', 'chk_evolution_cost')
+
+    def __repr__(self):
+        return "%s -> %s" % (self.pokemon_id, self.evolution_id)
+
+
+class PokemonFastMove(Base):
+    __tablename__ = 'pokemon_fast_move'
+
+    pokemon_id = Column(String, ForeignKey('pokemon.id'), primary_key=True)
+    fast_move_id = Column(String, ForeignKey('fast_move.id'), primary_key=True)
+
+    def __repr__(self):
+        return "%s: %s" % (self.pokemon_id, self.fast_move_id)
+
+class PokemonChargedMove(Base):
+    __tablename__ = 'pokemon_charged_move'
+
+    pokemon_id = Column(String, ForeignKey('pokemon.id'), primary_key=True)
+    charged_move_id = Column(String, ForeignKey('charged_move.id'), primary_key=True)
+
+    def __repr__(self):
+        return "%s: %s" % (self.pokemon_id, self.charged_move_id)

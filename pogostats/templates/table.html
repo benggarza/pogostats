@@ -3,18 +3,18 @@
 {% block title %}{{ title }}{% endblock %}
 
 {% block body %}
-<div class="container px-3">
-    <table id="data" class="table table-striped">
-        <thead>
-        <tr>
-            {% for col in columns %}
-            <th>{{ col }}</th>
-            {% endfor %}
-        </tr>
-        </thead>
-        <tbody>
-        </tbody>
-    </table>
+<div class="mx-2 my-2">
+  <table id="data" class="table table-dark hover">
+      <thead>
+      <tr>
+          {% for col in columns %}
+          <th>{{ col }}</th>
+          {% endfor %}
+      </tr>
+      </thead>
+      <tbody>
+      </tbody>
+  </table>
 </div>
 {% endblock %}
 
