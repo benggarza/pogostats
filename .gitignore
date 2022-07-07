@@ -5,3 +5,4 @@ venv/
 pogostats/*.pyc
 dist/
 build/
+pogostats/*/__pycache__
