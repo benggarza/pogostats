@@ -1,2 +1,0 @@
-from pogostats import db
-
