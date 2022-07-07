@@ -11,9 +11,6 @@ def pokedex_data():
     pokemon_query = select(Pokemon.pokedex_number, Pokemon.name, Pokemon.first_type_id, Pokemon.second_type_id, Pokemon.base_atk, Pokemon.base_def, Pokemon.base_sta).distinct()
     total_records = len(session.execute(pokemon_query).all())
     pokemon_columns = helpers.get_query_columns(pokemon_query)
-    
-    print(request.args)
-    print("REQUEST ARGS HERE")
 
     # search filter
     search = request.args.get('search[value]')
@@ -24,6 +21,9 @@ def pokedex_data():
             Pokemon.first_type_id.like(f'%{search}%') |
             Pokemon.second_type_id.like(f'%{search}%')
         )
+    total_filtered = len(session.execute(pokemon_query).all())
+    print(total_filtered)
+
     
     # sorting
     order = []
@@ -48,13 +48,11 @@ def pokedex_data():
     start = request.args.get('start', type=int)
     length = request.args.get('length', type=int)
     # sqlalchemy sending LIMIT ? OFFSET ? causing issues
-    print(start)
-    print(length)
     pokemon_query = pokemon_query.offset(start)
     pokemon_query = pokemon_query.limit(length)
 
     pokemon_result = session.execute(pokemon_query).all()
-    total_filtered = len(pokemon_result)
+    print(total_records)
 
     # response
     return {
