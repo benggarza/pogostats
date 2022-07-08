@@ -1,23 +1,27 @@
 from flask import request
 from pogostats import app, helpers
-from pogostats.models import Pokemon
+from pogostats.models import MyPokemon
 from pogostats.api.util import *
 from sqlalchemy import select
 import json
 
-# Template copied from https://github.com/miguelgrinberg/flask-tables
-@app.route('/api/pokedex')
-def pokedex_data():
+
+@app.route('/api/mypokemon')
+def mypokemon_data():
     session = helpers.load_db_session()
     pokemon_query = select(
-            Pokemon.pokedex_number,
-            Pokemon.name,
-            Pokemon.first_type_id,
-            Pokemon.second_type_id,
-            Pokemon.base_atk,
-            Pokemon.base_def,
-            Pokemon.base_sta
-        ).distinct()
+        MyPokemon.pokemon_id,
+        MyPokemon.pokemon_level_id,
+        MyPokemon.atk_iv,
+        MyPokemon.def_iv,
+        MyPokemon.sta_iv,
+        MyPokemon.fast_move_id,
+        MyPokemon.first_charged_move_id,
+        MyPokemon.second_charged_move_id,
+        MyPokemon.shadow_multiplier,
+        MyPokemon.purified_multiplier,
+        MyPokemon.lucky_multiplier
+            )
     total_records = len(session.execute(pokemon_query).all())
     pokemon_columns = helpers.get_query_columns(pokemon_query)
 
@@ -25,15 +29,15 @@ def pokedex_data():
     search = request.args.get('search[value]')
     if search:
         pokemon_query = pokemon_query.where(
-            Pokemon.name.like(f'%{search}%') |
-            Pokemon.pokedex_number.like(f'%{search}%') |
-            Pokemon.first_type_id.like(f'%{search}%') |
-            Pokemon.second_type_id.like(f'%{search}%')
+            MyPokemon.pokemon_id.like(f'%{search}%') |
+            MyPokemon.fast_move_id.like(f'%{search}%') |
+            MyPokemon.first_charged_move_id.like(f'%{search}%') |
+            MyPokemon.second_charged_move_id.like(f'%{search}%')
         )
     total_filtered = len(session.execute(pokemon_query).all())
     
     # sorting
-    order = sorting(request.args, Pokemon, pokemon_columns)
+    order = sorting(request.args, MyPokemon, pokemon_columns)
     if order:
         pokemon_query = pokemon_query.order_by(*order)
 

@@ -22,9 +22,11 @@
   <script type="text/javascript" src="/static/js/utils.js"></script> 
   <script>
     var columns = generate_columns({{columns|safe}});
+    var endpoint = '/api/' + '{{ title|safe }}';
+    console.log(endpoint);
     $(document).ready(function () {
       $('#data').DataTable({
-        ajax: '/api/pokedex',
+        ajax: endpoint,
         serverSide: true,
         columns: columns,
       });
