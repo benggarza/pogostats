@@ -2,11 +2,11 @@ from flask import request
 from pogostats import app, helpers
 from pogostats.models import Pokemon
 from sqlalchemy import select
+import json
 
 # Template copied from https://github.com/miguelgrinberg/flask-tables
 @app.route('/api/pokedex')
 def pokedex_data():
-    print("HANDLING API REQUEST WOOOO")
     session = helpers.load_db_session()
     pokemon_query = select(Pokemon.pokedex_number, Pokemon.name, Pokemon.first_type_id, Pokemon.second_type_id, Pokemon.base_atk, Pokemon.base_def, Pokemon.base_sta).distinct()
     total_records = len(session.execute(pokemon_query).all())
@@ -22,8 +22,6 @@ def pokedex_data():
             Pokemon.second_type_id.like(f'%{search}%')
         )
     total_filtered = len(session.execute(pokemon_query).all())
-    print(total_filtered)
-
     
     # sorting
     order = []
@@ -33,7 +31,7 @@ def pokedex_data():
         if col_index is None:
             break
         col_name = request.args.get(f'columns[{col_index}][data]')
-        if col_name not in ['name', 'pokedex_number', 'base_atk', 'base_def', 'base_sta']:
+        if col_name not in pokemon_columns:
             col_name = 'name'
         descending = request.args.get(f'order[{i}][dir]') == 'desc'
         col = getattr(Pokemon, col_name)
@@ -47,12 +45,10 @@ def pokedex_data():
     # pagination
     start = request.args.get('start', type=int)
     length = request.args.get('length', type=int)
-    # sqlalchemy sending LIMIT ? OFFSET ? causing issues
     pokemon_query = pokemon_query.offset(start)
     pokemon_query = pokemon_query.limit(length)
 
     pokemon_result = session.execute(pokemon_query).all()
-    print(total_records)
 
     # response
     return {

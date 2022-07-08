@@ -19,20 +19,14 @@
 {% endblock %}
 
 {% block scripts %}
+  <script type="text/javascript" src="/static/js/utils.js"></script> 
   <script>
+    var columns = generate_columns({{columns|safe}});
     $(document).ready(function () {
       $('#data').DataTable({
         ajax: '/api/pokedex',
         serverSide: true,
-        columns: [
-          {data: 'pokedex_number'},
-          {data: 'name'},
-          {data: 'first_type_id', orderable: false},
-          {data: 'second_type_id', orderable: false},
-          {data: 'base_atk'},
-          {data: 'base_def'},
-          {data: 'base_sta'}
-        ],
+        columns: columns,
       });
     });
   </script>
