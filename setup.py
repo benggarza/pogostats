@@ -7,6 +7,7 @@ setup(
     install_requires=[
         'flask',
         'pandas',
-        'sqlalchemy'
+        'sqlalchemy',
+        'flask-wtf'
     ],
 )
