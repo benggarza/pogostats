@@ -1,4 +1,4 @@
-attacking,defender,multiplier
+attack_type_id,defender_type_id,multiplier
 NORMAL,NORMAL,1.0
 FIRE,NORMAL,1.0
 WATER,NORMAL,1.0

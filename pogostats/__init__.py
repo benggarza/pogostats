@@ -6,7 +6,7 @@ from flask import Flask
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
-from pogostats.settings import SQLALCHEMY_DATABASE_URI
+from pogostats.settings import *
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 
@@ -23,6 +23,15 @@ Base = declarative_base(engine)
 # Session is a factory for query sessions
 Session = sessionmaker(bind=engine)
 
-from pogostats import views, models, forms
+from pogostats import views, models, forms, helpers
+
+# If we set the RESET_DATABASE config to true, database will be refilled at the beginning of each run
+# useful for debugging
+if RESET_DATABASE and os.path.exists('../pogostats/pogostats.db'):
+    os.remove('../pogostats/pogostats.db')
+
+# initialize database and fill any reference tables that shouldn't be empty #
+Base.metadata.create_all(engine, checkfirst=True)
+helpers.initialize_database()
 
 #app.run(debug=True)

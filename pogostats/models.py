@@ -1,6 +1,6 @@
 from sqlalchemy import Float
 
-from pogostats import engine, Base
+from pogostats import engine, Base, helpers
 
 from .mypokemon.models import *
 from .pokedex.models import *
@@ -62,14 +62,13 @@ class ChargedMove(Base):
     energy_cost = Column(Integer, nullable=False)
 
     CheckConstraint('energy_cost >= 0', 'chk_energy_cost')
+    CheckConstraint('instr(id, "_FAST") = 0', 'chk_no_fast_moves')
 
 class WeatherBoost(Base):
     __tablename__ = 'weather_boost'
 
-    id = Column(String, primary_key=True)
-    boosted_pokemon_type_id = Column(String, ForeignKey('pokemon_type.id'), nullable=False)
+    weather_id = Column(String, primary_key=True)
+    boosted_pokemon_type_id = Column(String, ForeignKey('pokemon_type.id'), primary_key=True)
 
     # TODO - complete list of valid weather ids
-    CheckConstraint('id in [...]', 'chk_valid_weather')
-
-Base.metadata.create_all(engine, checkfirst=True)
+    CheckConstraint('id in [SUNNY, RAINY, PARTLY_CLOUDY, CLOUDY, SNOW, FOG, EXTREME]', 'chk_valid_weather')

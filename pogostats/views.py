@@ -35,6 +35,29 @@ def add_mypokemon():
     form = EditMyPokemonForm()
     if form.validate_on_submit():
         # TODO - calculate other stats and add entry to database
+        session = helpers.load_db_session()
+
+        pokedex_selection = select(Pokemon.base_atk, Pokemon.base_def, Pokemon.base_sta).where(Pokemon.id == form.pokemon_id)
+        pokedex_entry = session.execute(pokedex_selection).first()
+        level_selection = select(PokemonLevel.cpm).where(PokemonLevel.id == form.pokemon_level_id)
+        cpm = session.execute(level_selection).first().cpm
+
+        atk_stat = (pokedex_entry.base_atk + form.atk_iv) * cpm * (1.2 if form.is_shadow else 1.0)
+        def_stat = (pokedex_entry.base_def + form.def_iv) * cpm * 1/(1.2 if form.is_shadow else 1.0)
+        hp = (pokedex_entry.base_sta + form.sta_iv) * cpm
+
+        new_my_pokemon = MyPokemon()
+        form.populate_obj(new_my_pokemon)
+        new_my_pokemon.shadow_multiplier = 1.2 if form.is_shadow else 1.0
+        new_my_pokemon.purified_multiplier = 0.9 if form.is_purified else 1.0
+        new_my_pokemon.lucky_multiplier = 0.5 if form.is_lucky else 1.0
+
+        new_my_pokemon.atk_stat = atk_stat,
+        new_my_pokemon.def_stat = def_stat,
+        new_my_pokemon.hp = hp
+
+        session.add(new_my_pokemon)
+        session.commit()
         return redirect('/mypokemon')
     return render_template('form.html', title='Add My Pokemon', fields=None)
 
