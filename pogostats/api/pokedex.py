@@ -52,3 +52,8 @@ def pokedex_data():
         'recordsTotal': total_records,
         'draw': request.args.get('draw', type=int),
     }
+
+@app.route('/api/pokedex/moves')
+def pokemon_moves():
+    session = helpers.load_db_session()
+    # TODO - build http response with lists of valid fast moves and charged moves for pokemon selected in mypokemon edit/add form and raid setup form

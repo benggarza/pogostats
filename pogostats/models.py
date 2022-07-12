@@ -4,6 +4,7 @@ from pogostats import engine, Base
 
 from .mypokemon.models import *
 from .pokedex.models import *
+from .raid.models import *
 
 class PokemonType(Base):
     __tablename__ = 'pokemon_type'
@@ -61,5 +62,14 @@ class ChargedMove(Base):
     energy_cost = Column(Integer, nullable=False)
 
     CheckConstraint('energy_cost >= 0', 'chk_energy_cost')
+
+class WeatherBoost(Base):
+    __tablename__ = 'weather_boost'
+
+    id = Column(String, primary_key=True)
+    boosted_pokemon_type_id = Column(String, ForeignKey('pokemon_type.id'), nullable=False)
+
+    # TODO - complete list of valid weather ids
+    CheckConstraint('id in [...]', 'chk_valid_weather')
 
 Base.metadata.create_all(engine, checkfirst=True)

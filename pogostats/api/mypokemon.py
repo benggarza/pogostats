@@ -56,3 +56,4 @@ def mypokemon_data():
         'recordsTotal': total_records,
         'draw': request.args.get('draw', type=int),
     }
+

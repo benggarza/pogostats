@@ -2,7 +2,7 @@ from flask_wtf import Form
 from wtforms import StringField, BooleanField, IntegerField, SelectField, DecimalField
 from wtforms.validators import DataRequired, Optional, ValidationError
 
-class RaidSetup(Form):
+class RaidSetupForm(Form):
     friendship_levels = ['None', 'Good', 'Great', 'Ultra', 'Best']
 
     # Species select list created in view function
