@@ -28,27 +28,27 @@ Python 3.9, flask, flask-wtf, sqlalchemy, pandas
 
 ***pogostats/mypokemon*** - sub-app for managing and searching user's pokemon
 
-  **pogostats/mypokemon/models.py** - declares MyPokemon database Model
+**pogostats/mypokemon/models.py** - declares MyPokemon database Model
 
-  **pogostats/mypokemon/forms.py** - defines Form for adding new Pokemon to MyPokemon
+**pogostats/mypokemon/forms.py** - defines Form for adding new Pokemon to MyPokemon
 
 ***pogostats/pokedex*** - sub-app for searching the Pokedex
 
-  **pogostats/pokedex/models.py** - declares Pokemon database Model (species stats)
+**pogostats/pokedex/models.py** - declares Pokemon database Model (species stats)
 
 ***pogostats/raid*** - a raid simulation sub-app, able to simulate raids with general counters or user's pokemon (MyPokemon)
 
-  **\*pogostats/raid/models.py** - declares RaidResult database Model for recording raid simulation results
+**\*pogostats/raid/models.py** - declares RaidResult database Model for recording raid simulation results
 
-  **pogostats/raid/forms.py** - defines Form for setting up a raid simulation
+**pogostats/raid/forms.py** - defines Form for setting up a raid simulation
 
 ***pogostats/api*** - internal api endpoints to aid in server-side processing and dynamic form filling
 
-  **pogostats/api/mypokemon.py** - api endpoints for server-side processing of MyPokemon table
+**pogostats/api/mypokemon.py** - api endpoints for server-side processing of MyPokemon table
 
-  **\*pogostats/api/pokedex.py** - api endpoints for server-side processing of tables and fast move/charged move queries
+**\*pogostats/api/pokedex.py** - api endpoints for server-side processing of tables and fast move/charged move queries
 
-  **\*pogostats/api/util.py** - helper functions for api endpoints. may move to pogostats/helpers.py
+**\*pogostats/api/util.py** - helper functions for api endpoints. may move to pogostats/helpers.py
 
 **pogostats/templates** - contains Jinja2 html template files
 
