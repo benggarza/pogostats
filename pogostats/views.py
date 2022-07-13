@@ -33,28 +33,37 @@ def mypokemon():
 @app.route('/mypokemon/add', methods=('GET', 'POST'), endpoint='mypokemon-add')
 def add_mypokemon():
     form = EditMyPokemonForm()
+    if request.method == 'POST':
+        pokemon_id = form.pokemon_id.data
+        print(pokemon_id)
+        #form.fast_move_id.choices = helpers.get_valid_fast_moves(pokemon_id)
+        #form.first_charged_move_id.choices = form.second_charged_move_id.choices = helpers.get_valid_charged_moves(pokemon_id)
+
     if form.validate_on_submit():
         print("we got a submission!")
 
         session = helpers.load_db_session()
 
-        pokedex_selection = select(Pokemon.base_atk, Pokemon.base_def, Pokemon.base_sta).where(Pokemon.id == form.pokemon_id)
-        pokedex_entry = session.execute(pokedex_selection).first()
-        level_selection = select(PokemonLevel.cpm).where(PokemonLevel.id == form.pokemon_level_id)
+        pokemon_stats = select(Pokemon.base_atk, Pokemon.base_def, Pokemon.base_sta).where(Pokemon.id == form.pokemon_id.data)
+        pokedex_entry = session.execute(pokemon_stats).first()
+        level_selection = select(PokemonLevel.cpm).where(PokemonLevel.id == form.pokemon_level_id.data)
         cpm = session.execute(level_selection).first().cpm
 
-        atk_stat = (pokedex_entry.base_atk + form.atk_iv) * cpm * (1.2 if form.is_shadow else 1.0)
-        def_stat = (pokedex_entry.base_def + form.def_iv) * cpm * 1/(1.2 if form.is_shadow else 1.0)
-        hp = (pokedex_entry.base_sta + form.sta_iv) * cpm
+        atk_stat = (pokedex_entry.base_atk + form.atk_iv.data) * cpm * (1.2 if form.is_shadow.data else 1.0)
+        def_stat = (pokedex_entry.base_def + form.def_iv.data) * cpm * 1/(1.2 if form.is_shadow.data else 1.0)
+        hp = (pokedex_entry.base_sta + form.sta_iv.data) * cpm
 
         new_my_pokemon = MyPokemon()
         form.populate_obj(new_my_pokemon)
-        new_my_pokemon.shadow_multiplier = 1.2 if form.is_shadow else 1.0
-        new_my_pokemon.purified_multiplier = 0.9 if form.is_purified else 1.0
-        new_my_pokemon.lucky_multiplier = 0.5 if form.is_lucky else 1.0
+        print(form.is_shadow.raw_data)
+        print(form.is_lucky)
+        print(form.is_purified)
+        new_my_pokemon.shadow_multiplier = 1.2 if form.is_shadow.data else 1.0
+        new_my_pokemon.purified_multiplier = 0.9 if form.is_purified.data else 1.0
+        new_my_pokemon.lucky_multiplier = 0.5 if form.is_lucky.data else 1.0
 
-        new_my_pokemon.atk_stat = atk_stat,
-        new_my_pokemon.def_stat = def_stat,
+        new_my_pokemon.atk_stat = atk_stat
+        new_my_pokemon.def_stat = def_stat
         new_my_pokemon.hp = hp
 
         session.add(new_my_pokemon)
@@ -62,14 +71,14 @@ def add_mypokemon():
         return redirect('/mypokemon')
     print(form.errors)
     # TODO - change field types, mostly to selectfields
-    fields=[
+    '''fields=[
             {'name':'pokemon_id', 'type':'text'},
             {'name':'pokemon_level_id', 'type':'text'},
             {'name':'atk_iv', 'type':'text'}, {'name':'def_iv', 'type':'text'}, {'name':'sta_iv', 'type':'text'},
             {'name':'is_shadow', 'type':'checkbox'}, {'name':'is_purified','type':'checkbox'}, {'name':'is_lucky', 'type':'checkbox'},
             {'name':'fast_move_id', 'type':'text'}, {'name':'first_charged_move_id', 'type':'text'}, {'name':'second_charged_move_id', 'type':'text'}
-            ]
-    return render_template('form.html', title='Add My Pokemon', fields=fields)
+            ]'''
+    return render_template('form.html', title='Add My Pokemon', form=form)
 
 @app.route('/mypokemon/edit/<int:pokemon_id>', methods=('GET', 'POST'), endpoint='mypokemon-edit')
 def edit_mypokemon(pokemon_id):

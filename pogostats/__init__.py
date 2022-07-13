@@ -17,7 +17,7 @@ app.config.from_pyfile('settings.py') # do i want this?
 # Initialize SQLAlchemy engine and session factory
 
 # engine is a factory for connections to the db
-engine = create_engine(SQLALCHEMY_DATABASE_URI, echo=True)
+engine = create_engine(SQLALCHEMY_DATABASE_URI, echo=True, connect_args={"check_same_thread": False})
 # Base stores the structure of the db
 Base = declarative_base(engine)
 # Session is a factory for query sessions

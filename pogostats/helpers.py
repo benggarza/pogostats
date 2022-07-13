@@ -25,6 +25,20 @@ def insert_df_to_table(df, table):
     session.execute(insert_stmt, df.to_dict('records'))
     session.commit()
     
+def get_all_pokemon_ids():
+    session = load_db_session()
+    pokemon_ids = session.execute(select(Pokemon.id))
+    return [p[0] for p in pokemon_ids]
+
+def get_valid_fast_moves(pokemon_id):
+    session = load_db_session()
+    fast_moves = session.execute(select(PokemonFastMove.fast_move_id).where(PokemonFastMove.pokemon_id == pokemon_id))
+    return [f[0] for f in fast_moves]
+
+def get_valid_charged_moves(pokemon_id):
+    session = load_db_session()
+    charged_moves = session.execute(select(PokemonChargedMove.charged_move_id).where(PokemonChargedMove.pokemon_id == pokemon_id))
+    return [c[0] for c in charged_moves]
 
 def initialize_database():
     print("Initializing empty tables...")

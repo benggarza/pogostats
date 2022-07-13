@@ -5,6 +5,8 @@ from pogostats.api.util import *
 from sqlalchemy import select
 import json
 
+from pogostats.pokedex.models import Pokemon, PokemonFastMove, PokemonChargedMove
+
 # Template copied from https://github.com/miguelgrinberg/flask-tables
 @app.route('/api/pokedex')
 def pokedex_data():
@@ -53,7 +55,23 @@ def pokedex_data():
         'draw': request.args.get('draw', type=int),
     }
 
-@app.route('/api/pokedex/moves')
-def pokemon_moves():
+@app.route('/api/pokedex/<field>')
+def pokemon_autocomplete(field):
     session = helpers.load_db_session()
-    # TODO - build http response with lists of valid fast moves and charged moves for pokemon selected in mypokemon edit/add form and raid setup form
+    # TODO - build http response with lists of valid choices for pokemon selected in mypokemon edit/add form and raid setup form
+    response = {'data': []}
+    pokemon_id = request.args.get('pokemon_id')
+    print(pokemon_id, field)
+    print()
+
+    # Get proper data from db
+    stmt = None
+    if field == 'pokemon_id':
+        response['data'] = helpers.get_all_pokemon_ids()   
+    elif field == 'fast_move_id':
+        response['data'] = helpers.get_valid_fast_moves(pokemon_id)
+    elif 'charged_move_id' in field:
+        response['data'] = helpers.get_valid_charged_moves(pokemon_id)
+    
+    print(response)
+    return response
