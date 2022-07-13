@@ -1,7 +1,49 @@
 {% extends "master.html" %}
 
-{% block title %}{% endblock %}
+{% block stylesheet %}
+<link rel="stylesheet" src="https://code.jquery.com/ui/1.13.0/themes/smoothness/jquery-ui.css">
+{% endblock %}
+
+{% block title %}{{ title }}{% endblock %}
 
 {% block body %}
+<form method='POST'>
+    {% for field in fields %}
+        <label for="title">{{ field.name }}</label>
+        <br>
+        <input type="{{ field.type }}" name="{{ field.name }}" id="{{ field.name }}"
+            placeholder="{{ field.name }}"
+            value="{{ request.form['{{ field.name }}'] }}">
+        <br>
+    {% endfor %}
+        <button type="submit">Submit</button>
+</form>
+{% endblock %}
 
+{% block scripts %}
+<script   src="https://code.jquery.com/ui/1.13.0/jquery-ui.min.js"  
+            integrity="sha256-hlKLmzaRlE8SCJC1Kw8zoUbU8BxA+8kR3gseuKfMjxA=" 
+            crossorigin="anonymous"></script>
+<script src="https://code.jquery.com/ui/1.13.1/jquery-ui.js"></script>
+<script>
+    $( function() {
+        var pokemon_id = $( '#pokemon.id' ).val();
+        {% for field in fields %}
+        // if Form field is a SelectField
+        if ( "{{ field.type }}" == 'text') {
+            // TODO - build api request for valid fields
+            $.ajax({
+                url: '/api/' + 'mypokemon/add',
+                type: "GET",
+                data: {'field': "{{ field.name }}", 'pokemon_id': pokemon_id},
+                success: function() {
+                    $("#{{ field.name }}").autocomplete({
+                        source: data
+                    });
+                }
+            });
+        }
+        {% endfor %}
+    } );
+</script>
 {% endblock %}

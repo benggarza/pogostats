@@ -12,16 +12,16 @@ class EditMyPokemonForm(Form):
     #stardust_cost -- these are easier to see for the user
     #cp -- and can calculate IV range and level
     #hp --
-    is_shadow = BooleanField("Shadow", validators=[DataRequired()])
-    is_purified = BooleanField("Purified", validators=[DataRequired()])
-    is_lucky = BooleanField("Lucky", validators=[DataRequired()])
+    is_shadow = BooleanField("Shadow", validators=[])
+    is_purified = BooleanField("Purified", validators=[])
+    is_lucky = BooleanField("Lucky", validators=[])
     # lists of fast moves, charged moves to be dynamically created via DataTables-ajax request and api endpoint
     fast_move_id = SelectField("Fast Move", validators=[DataRequired()])
     first_charged_move_id = SelectField("Charged Move", validators=[DataRequired()])
     second_charged_move_id = SelectField("Second Charged MOve", validators=[Optional()])
 
     def validate_pokemon_level_id(form, field):
-        if field.data > 50 or field.data < 1 or field.data % 0.5 == 0:
+        if field.data > 50 or field.data < 1 or float(field.data) % 0.5 != 0:
             raise ValidationError("Valid levels are 1.0, 1.5, 2.0, ..., 49.5, 50.0")
     
     def validate_iv(form, field):

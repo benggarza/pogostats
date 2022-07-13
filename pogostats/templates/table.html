@@ -15,10 +15,17 @@
       <tbody>
       </tbody>
   </table>
+  {% if button_url is not none %}
+  <a href="{{ button_url }}" class="btn btn-primary">{{ button_name }}</a>
+  {% endif %}
+  
 </div>
 {% endblock %}
 
 {% block scripts %}
+  <script type="text/javascript" charset="utf8" src="https://code.jquery.com/jquery-3.6.0.min.js"></script> 
+  <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.25/js/jquery.dataTables.js"></script>
+  <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.25/js/dataTables.bootstrap5.js"></script>
   <script type="text/javascript" src="/static/js/utils.js"></script> 
   <script>
     var columns = generate_columns({{columns|safe}});

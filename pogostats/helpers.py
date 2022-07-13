@@ -21,7 +21,6 @@ def table_is_empty(table):
 
 def insert_df_to_table(df, table):
     session = load_db_session()
-    print(df.to_dict('records'))
     insert_stmt = insert(table)
     session.execute(insert_stmt, df.to_dict('records'))
     session.commit()

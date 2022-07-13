@@ -28,13 +28,14 @@ def mypokemon():
         'shadow_multiplier',
         'purified_multiplier',
         'lucky_multiplier']
-    return render_template('table.html', title="mypokemon", columns=columns)
+    return render_template('table.html', title="mypokemon", columns=columns, button_url=url_for('mypokemon-add'), button_name="Add a Pokemon")
 
-@app.route('/mypokemon/add', methods=('GET', 'POST'))
+@app.route('/mypokemon/add', methods=('GET', 'POST'), endpoint='mypokemon-add')
 def add_mypokemon():
     form = EditMyPokemonForm()
     if form.validate_on_submit():
-        # TODO - calculate other stats and add entry to database
+        print("we got a submission!")
+
         session = helpers.load_db_session()
 
         pokedex_selection = select(Pokemon.base_atk, Pokemon.base_def, Pokemon.base_sta).where(Pokemon.id == form.pokemon_id)
@@ -59,9 +60,18 @@ def add_mypokemon():
         session.add(new_my_pokemon)
         session.commit()
         return redirect('/mypokemon')
-    return render_template('form.html', title='Add My Pokemon', fields=None)
+    print(form.errors)
+    # TODO - change field types, mostly to selectfields
+    fields=[
+            {'name':'pokemon_id', 'type':'text'},
+            {'name':'pokemon_level_id', 'type':'text'},
+            {'name':'atk_iv', 'type':'text'}, {'name':'def_iv', 'type':'text'}, {'name':'sta_iv', 'type':'text'},
+            {'name':'is_shadow', 'type':'checkbox'}, {'name':'is_purified','type':'checkbox'}, {'name':'is_lucky', 'type':'checkbox'},
+            {'name':'fast_move_id', 'type':'text'}, {'name':'first_charged_move_id', 'type':'text'}, {'name':'second_charged_move_id', 'type':'text'}
+            ]
+    return render_template('form.html', title='Add My Pokemon', fields=fields)
 
-@app.route('/mypokemon/edit/<int:pokemon_id>', methods=('GET', 'POST'))
+@app.route('/mypokemon/edit/<int:pokemon_id>', methods=('GET', 'POST'), endpoint='mypokemon-edit')
 def edit_mypokemon(pokemon_id):
     session = helpers.load_db_session()
     my_pokemon =session.execute(select(MyPokemon).where(MyPokemon.id == pokemon_id)).first()
@@ -78,7 +88,7 @@ def edit_mypokemon(pokemon_id):
 @app.route('/pokedex')
 def pokedex():
     columns=['pokedex_number', 'name', 'first_type_id', 'second_type_id', 'base_atk', 'base_def', 'base_sta']
-    return render_template('table.html', title='pokedex', columns=columns)
+    return render_template('table.html', title='pokedex', columns=columns, button_url=None, button_name=None)
 
 @app.route('/raid')
 def raid_setup():
@@ -92,13 +102,13 @@ def raid_setup():
             redirect('/raid/results/allpokemon')
     return render_template('form.html', title='Raid Setup', fields=None)
 
-@app.route('/raid/results/mypokemon')
+@app.route('/raid/results/mypokemon', endpoint='raidresults-mypokemon')
 def raid_results_mypokemon():
     # TODO - define columns
     columns = []
     return render_template('mypokemon_raid.html', title='Raid Results', columns=columns)
 
-@app.route('/raid/results/allpokemon')
+@app.route('/raid/results/allpokemon', endpoint='raidresults-allpokemon')
 def raid_results_allpokemon():
     # TODO - define columns
     columns = []
