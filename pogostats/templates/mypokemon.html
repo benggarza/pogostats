@@ -1,0 +1,38 @@
+{% extends "master.html" %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block body %}
+<div class='card-deck' id='pokemon-storage'>
+
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script type="text/javascript" charset="utf8" src="https://code.jquery.com/jquery-3.6.0.min.js"></script> 
+<script>
+function drawCards(pokemon){
+    pokemonStorage = $('#pokemon-storage');
+    for (let p of pokemon){
+        poke_card = $("<div class='card'>"+p['name']+"</div>");
+        poke_card.appendTo('#pokemon-storage');
+    }
+}
+$(document).ready(function() {
+    $.ajax({
+        url: '/api/pokedex/mypokemon',
+        type: "GET",
+        data: {'pokemon_id': 'None'},
+        success: function(data) {
+            console.log("Data!:")
+            console.log(data);
+            drawCards(data['data']);
+        },
+        failure: function(data) {
+            console.log("Request failed");
+            console.log(data);
+        }
+    });
+});
+</script>
+{% endblock %}

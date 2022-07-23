@@ -1,0 +1,48 @@
+{% extends "master.html" %}
+
+{% block stylesheet %}
+<link rel="stylesheet" src="https://code.jquery.com/ui/1.13.0/themes/smoothness/jquery-ui.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/awesomplete/1.1.5/awesomplete.css"/>
+{% endblock %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block body %}
+<form method='POST'>
+    {{ form.csrf_token }}
+    {{ form.hidden_tag() }}
+
+    <input class="awesomplete" id="pokemon_id" name='pokemon_id' placeholder="Choose Pokemon"/>
+    <br>
+    <br>
+    <input class="awesomplete" id="level" name='pokemon_level_id' placeholder="Level" disabled/>
+    <br>
+    <select class="dropdown" id ="atk_iv" name='atk_iv' placeholder="Atk IV" disabled>
+    </select>
+    <select class="dropdown" id ="def_iv" name='def_iv' placeholder="Def IV" disabled>
+    </select>
+    <select class="dropdown" id ="sta_iv" name='sta_iv' placeholder="Sta IV" disabled>
+    </select>
+    <br>
+    <br>
+    <select class="dropdown" id ="fast_move" name='fast_move_id' placeholder="Fast Move" disabled>
+    </select>
+    <br>
+    <select class="dropdown" id="first_charged_move" name='first_charged_move_id' placeholder="Charged Move 1" disabled>
+    </select>
+    <br>
+    <select class="dropdown" id="second_charged_move" name='second_charged_move_id' placeholder="Charged Move 2" disabled>
+    </select>
+    <br>
+    <br>
+    <button type="submit" id="submit-btn" disabled>Submit</button>
+</form>
+{% endblock %}
+
+{% block scripts %}
+
+<script src="https://code.jquery.com/jquery-3.6.0.js"></script> 
+<script src="https://code.jquery.com/ui/1.13.1/jquery-ui.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/awesomplete/1.1.5/awesomplete.js"></script>
+<script src="/static/js/form.js"></script>
+{% endblock %}

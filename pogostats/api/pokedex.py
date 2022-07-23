@@ -67,11 +67,11 @@ def pokemon_autocomplete(field):
     # Get proper data from db
     stmt = None
     if field == 'pokemon_id':
-        response['data'] = helpers.get_all_pokemon_ids()   
+        ids = helpers.get_all_pokemon_options()   
+        response['data'] = ids
     elif field == 'fast_move_id':
-        response['data'] = helpers.get_valid_fast_moves(pokemon_id)
+        response['data'] = helpers.get_fast_moves(pokemon_id)
     elif 'charged_move_id' in field:
-        response['data'] = helpers.get_valid_charged_moves(pokemon_id)
+        response['data'] = helpers.get_charged_moves(pokemon_id)
     
-    print(response)
     return response

@@ -17,6 +17,7 @@ def index():
 
 @app.route('/mypokemon')
 def mypokemon():
+    
     columns=['pokemon_id',
         'pokemon_level_id',
         'atk_iv',
@@ -28,17 +29,11 @@ def mypokemon():
         'shadow_multiplier',
         'purified_multiplier',
         'lucky_multiplier']
-    return render_template('table.html', title="mypokemon", columns=columns, button_url=url_for('mypokemon-add'), button_name="Add a Pokemon")
+    return render_template('mypokemon.html', title="mypokemon", columns=columns, button_url=url_for('mypokemon-add'), button_name="Add a Pokemon")
 
 @app.route('/mypokemon/add', methods=('GET', 'POST'), endpoint='mypokemon-add')
 def add_mypokemon():
     form = EditMyPokemonForm()
-    if request.method == 'POST':
-        pokemon_id = form.pokemon_id.data
-        print(pokemon_id)
-        #form.fast_move_id.choices = helpers.get_valid_fast_moves(pokemon_id)
-        #form.first_charged_move_id.choices = form.second_charged_move_id.choices = helpers.get_valid_charged_moves(pokemon_id)
-
     if form.validate_on_submit():
         print("we got a submission!")
 
@@ -68,17 +63,11 @@ def add_mypokemon():
 
         session.add(new_my_pokemon)
         session.commit()
+
         return redirect('/mypokemon')
-    print(form.errors)
-    # TODO - change field types, mostly to selectfields
-    '''fields=[
-            {'name':'pokemon_id', 'type':'text'},
-            {'name':'pokemon_level_id', 'type':'text'},
-            {'name':'atk_iv', 'type':'text'}, {'name':'def_iv', 'type':'text'}, {'name':'sta_iv', 'type':'text'},
-            {'name':'is_shadow', 'type':'checkbox'}, {'name':'is_purified','type':'checkbox'}, {'name':'is_lucky', 'type':'checkbox'},
-            {'name':'fast_move_id', 'type':'text'}, {'name':'first_charged_move_id', 'type':'text'}, {'name':'second_charged_move_id', 'type':'text'}
-            ]'''
-    return render_template('form.html', title='Add My Pokemon', form=form)
+    else:
+        print(form.errors)
+    return render_template('form_mypokemon.html', title='Add My Pokemon', form=form)
 
 @app.route('/mypokemon/edit/<int:pokemon_id>', methods=('GET', 'POST'), endpoint='mypokemon-edit')
 def edit_mypokemon(pokemon_id):
@@ -92,7 +81,7 @@ def edit_mypokemon(pokemon_id):
     if form.validate_on_submit():
         # TODO - calculate other stats and replace entry in database
         return redirect('/mypokemon')
-    return render_template('form.html', title='Edit My Pokemon', fields=None)
+    return render_template('form_mypokemon.html', title='Edit My Pokemon', form=form)
 
 @app.route('/pokedex')
 def pokedex():

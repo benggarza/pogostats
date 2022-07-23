@@ -30,15 +30,26 @@ def get_all_pokemon_ids():
     pokemon_ids = session.execute(select(Pokemon.id))
     return [p[0] for p in pokemon_ids]
 
-def get_valid_fast_moves(pokemon_id):
+def get_all_pokemon_options():
     session = load_db_session()
-    fast_moves = session.execute(select(PokemonFastMove.fast_move_id).where(PokemonFastMove.pokemon_id == pokemon_id))
-    return [f[0] for f in fast_moves]
+    pokemon_options =session.execute(select(Pokemon.id, Pokemon.name))
+    return [{'label': p[1], 'value': p[0]} for p in pokemon_options]
 
-def get_valid_charged_moves(pokemon_id):
+def get_fast_moves(pokemon_id=None):
     session = load_db_session()
-    charged_moves = session.execute(select(PokemonChargedMove.charged_move_id).where(PokemonChargedMove.pokemon_id == pokemon_id))
-    return [c[0] for c in charged_moves]
+    stmt = select(PokemonFastMove.fast_move_id)
+    if pokemon_id is not None:
+        stmt = stmt.where(PokemonFastMove.pokemon_id == pokemon_id)
+    fast_moves = session.execute(stmt)
+    return [(f[0], f[0]) for f in fast_moves]
+
+def get_charged_moves(pokemon_id=None):
+    session = load_db_session()
+    stmt = select(PokemonChargedMove.charged_move_id)
+    if pokemon_id is not None:
+        stmt = stmt.where(PokemonChargedMove.pokemon_id == pokemon_id)
+    charged_moves = session.execute(stmt)
+    return [(c[0], c[0]) for c in charged_moves]
 
 def initialize_database():
     print("Initializing empty tables...")

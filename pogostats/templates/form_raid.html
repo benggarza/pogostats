@@ -1,0 +1,35 @@
+{% extends "master.html" %}
+
+{% block stylesheet %}
+<link rel="stylesheet" src="https://code.jquery.com/ui/1.13.0/themes/smoothness/jquery-ui.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/awesomplete/1.1.5/awesomplete.css"/>
+{% endblock %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block body %}
+<form method='POST'>
+    {{ form.csrf_token }}
+    {% for field in form %}
+
+        {% if field.label == "pokemon_id" %}
+        <input class="dropdown-input" id="pokemon_id" placeholder="Choose Pokemon" value="{{ request.form['pokemon_id'] }}"/>
+        {% else %}
+        {{ field }}
+        {% endif %}
+
+
+        <br>
+        <br>
+    {% endfor %}
+        <button type="submit" disabled>Submit</button>
+</form>
+{% endblock %}
+
+{% block scripts %}
+
+<script src="https://code.jquery.com/jquery-3.6.0.js"></script> 
+<script src="https://code.jquery.com/ui/1.13.1/jquery-ui.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/awesomplete/1.1.5/awesomplete.js"></script>
+<script src="/static/js/form.js"></script>
+{% endblock %}
