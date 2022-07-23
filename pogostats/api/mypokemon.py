@@ -23,11 +23,13 @@ def mypokemon_data():
         MyPokemon.lucky_multiplier
             )
     total_records = len(session.execute(pokemon_query).all())
+    print(total_records)
     pokemon_columns = helpers.get_query_columns(pokemon_query)
 
     # search filter
     search = request.args.get('search[value]')
     if search:
+        print('filtering')
         pokemon_query = pokemon_query.where(
             MyPokemon.pokemon_id.like(f'%{search}%') |
             MyPokemon.fast_move_id.like(f'%{search}%') |
@@ -40,14 +42,16 @@ def mypokemon_data():
     order = sorting(request.args, MyPokemon, pokemon_columns)
     if order:
         pokemon_query = pokemon_query.order_by(*order)
-
+    '''
     # pagination
     start = request.args.get('start', type=int)
     length = request.args.get('length', type=int)
     pokemon_query = pokemon_query.offset(start)
     pokemon_query = pokemon_query.limit(length)
+    '''
 
     pokemon_result = session.execute(pokemon_query).all()
+    print(pokemon._asdict() for pokemon in pokemon_result)
 
     # response
     return {

@@ -14,15 +14,14 @@
 function drawCards(pokemon){
     pokemonStorage = $('#pokemon-storage');
     for (let p of pokemon){
-        poke_card = $("<div class='card'>"+p['name']+"</div>");
+        poke_card = $("<div class='card'>"+p['pokemon_id']+"</div>");
         poke_card.appendTo('#pokemon-storage');
     }
 }
 $(document).ready(function() {
     $.ajax({
-        url: '/api/pokedex/mypokemon',
+        url: '/api/mypokemon',
         type: "GET",
-        data: {'pokemon_id': 'None'},
         success: function(data) {
             console.log("Data!:")
             console.log(data);
